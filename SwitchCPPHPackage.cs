@@ -40,6 +40,7 @@ namespace VSIXIvson
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(SwitchCPPHPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideToolWindow(typeof(MonitorWindow))]
     public sealed class SwitchCPPHPackage : Package
     {
         /// <summary>
@@ -68,6 +69,7 @@ namespace VSIXIvson
         {
             SwitchCPPH.Initialize(this);
             base.Initialize();
+            MonitorWindowCommand.Initialize(this);
         }
 
         #endregion
