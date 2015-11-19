@@ -12,13 +12,13 @@ namespace VSIXIvson
   using EnvDTE;
   using EnvDTE80;
 
-  public class GraphControl : UserControl
+  public class GraphControl : ScrollViewer
   {
 
-    //public bool scrollLast = true;
-    //public string intFormat = "D3";
-    //public bool isBuilding = false;
-    //private bool isDark = false;
+    public bool scrollLast = true;
+    public string intFormat = "D3";
+    public bool isBuilding = false;
+    private bool isDark = false;
 
     Brush blueSolidBrush = new SolidColorBrush(Colors.DarkBlue);
     Pen blackPen = new Pen(new SolidColorBrush(Colors.Black), 1.0);
@@ -30,16 +30,28 @@ namespace VSIXIvson
 
     public GraphControl()
     {
-      //isDark = GetThemeId().ToLower() == "1ded0138-47ce-435e-84ef-9ec1f439b749";
+      isDark = GetThemeId().ToLower() == "1ded0138-47ce-435e-84ef-9ec1f439b749";
 
-      //blackBrush = new SolidColorBrush(isDark ? Colors.White : Colors.Black);
-      //Background = new SolidColorBrush(isDark ? Colors.Black : Colors.White);
-      //greenSolidBrush = new SolidColorBrush(isDark ? Colors.LightGreen : Colors.DarkGreen);
-      //redSolidBrush = new SolidColorBrush(isDark ? Color.FromRgb(165, 33, 33) : Colors.DarkRed);
-      //blueSolidBrush = new SolidColorBrush(isDark ? Color.FromRgb(50, 152, 204) : Colors.DarkBlue);
-      //blackPen = new Pen(new SolidColorBrush(isDark ? Colors.White : Colors.Black), 1.0);
-      //grid = new Pen(new SolidColorBrush(isDark ? Color.FromRgb(66, 66, 66) : Colors.LightGray), 1.0);
+      blackBrush = new SolidColorBrush(isDark ? Colors.White : Colors.Black);
+      Background = new SolidColorBrush(isDark ? Colors.Black : Colors.White);
+      greenSolidBrush = new SolidColorBrush(isDark ? Colors.LightGreen : Colors.DarkGreen);
+      redSolidBrush = new SolidColorBrush(isDark ? Color.FromRgb(165, 33, 33) : Colors.DarkRed);
+      blueSolidBrush = new SolidColorBrush(isDark ? Color.FromRgb(50, 152, 204) : Colors.DarkBlue);
+      blackPen = new Pen(new SolidColorBrush(isDark ? Colors.White : Colors.Black), 1.0);
+      grid = new Pen(new SolidColorBrush(isDark ? Color.FromRgb(66, 66, 66) : Colors.LightGray), 1.0);
+
+      Instance = this;
     }
+
+    /// <summary>
+    /// Gets the instance of the command.
+    /// </summary>
+    public static GraphControl Instance
+    {
+      get;
+      private set;
+    }
+
 
     protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
     {
@@ -48,12 +60,13 @@ namespace VSIXIvson
         return;
       }
 
+      DTE2 dte = (DTE2)MonitorWindowCommand.Instance.ServiceProvider.GetService(typeof(DTE));
 
-      //DTE2 dte = (DTE2)MonitorWindowCommand.Instance.ServiceProvider.GetService(typeof(DTE));
+      MonitorWindowCommand host = MonitorWindowCommand.Instance;
 
-      //int rowHeight = (int)FontFamily.LineSpacing + 1;
-      //int linesCount = dte.ActiveDocument..currentBuilds.Count + host.finishedBuilds.Count + 1;
-      //int totalHeight = rowHeight * linesCount;
+      int rowHeight = (int)FontFamily.LineSpacing + 1;
+      int linesCount = host.currentBuilds.Count + host.finishedBuilds.Count + 1;
+      int totalHeight = rowHeight * linesCount;
 
       //AutoScrollMinSize = new Size(this.AutoScrollMinSize.Width, totalHeight);
       //if (scrollLast)
@@ -66,17 +79,17 @@ namespace VSIXIvson
       //e.Graphics.Transform = mx;
 
       //int maxStringLength = 0;
-      //long tickStep = 100000000;
-      //long maxTick = tickStep;
-      //long nowTick = DateTime.Now.Ticks;
-      //long t = nowTick - host.buildTime.Ticks;
-      //if (host.currentBuilds.Count > 0)
-      //{
-      //    if (t > maxTick)
-      //    {
-      //        maxTick = t;
-      //    }
-      //}
+      long tickStep = 100000000;
+      long maxTick = tickStep;
+      long nowTick = DateTime.Now.Ticks;
+      long t = nowTick - host.buildTime.Ticks;
+      if (host.currentBuilds.Count > 0)
+      {
+        if (t > maxTick)
+        {
+          maxTick = t;
+        }
+      }
       //int i;
       //bool atLeastOneError = false;
       //for (i = 0; i < host.finishedBuilds.Count; i++)
