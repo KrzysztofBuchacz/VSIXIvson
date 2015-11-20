@@ -4,11 +4,11 @@ using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Collections.Generic;
-using System.Timers;
 using System.Text;
 using System.IO;
 using EnvDTE;
 using EnvDTE80;
+using System.Timers;
 
 namespace VSIXIvson
 {
@@ -33,11 +33,8 @@ namespace VSIXIvson
     public static readonly Guid CommandSet = new Guid("cf5988aa-595f-4ae0-8831-d38ec20b3047");
     private readonly Package package;
 
-    //public DTE2 _applicationObject;
-    //public AddIn _addInInstance;
     public DateTime buildTime;
     public ToolWindowPane paneWindow;
-    //public MonitorWindow controlWindow;
     public EnvDTE.BuildEvents buildEvents;
     public EnvDTE.SolutionEvents solutionEvents;
     public Dictionary<string, DateTime> currentBuilds = new Dictionary<string, DateTime>();
@@ -50,7 +47,6 @@ namespace VSIXIvson
     public int maxParallelBuilds = 0;
     public int allProjectsCount = 0;
     public int outputCounter = 0;
-    public Timer timer = new Timer();
 
     private MonitorWindowCommand(Package package)
     {
@@ -114,14 +110,7 @@ namespace VSIXIvson
     {
       currentBuilds.Clear();
       finishedBuilds.Clear();
-      if (paneWindow != null)
-      {
-        //paneWindow.Clear();
-        if (GraphControl.Instance != null)
-        {
-          GraphControl.Instance.InvalidateVisual();
-        }
-      }
+      GraphControl.Instance.InvalidateVisual();
     }
 
     void BuildEvents_OnBuildProjConfigDone(string Project, string ProjectConfig, string Platform, string SolutionConfig, bool Success)
@@ -149,14 +138,7 @@ namespace VSIXIvson
         b.Append("\t");
         b.Append(t.ToString(timeFormat));
         b.Append("\n");
-        if (paneWindow != null)
-        {
-          //paneWindow.OutputString(b.ToString());
-          //if (controlWindow != null)
-          //{
-          //  //controlWindow.Refresh();
-          //}
-        }
+        GraphControl.Instance.InvalidateVisual();
       }
     }
 
@@ -179,19 +161,12 @@ namespace VSIXIvson
 
     void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
     {
-      timer.Enabled = false;
-      //controlWindow.isBuilding = false;
+      GraphControl.Instance.timer.Enabled = false;
+      GraphControl.Instance.isBuilding = false;
       TimeSpan s = DateTime.Now - buildTime;
       DateTime t = new DateTime(s.Ticks);
       string msg = "Build Total Time: " + t.ToString(timeFormat) + ", max. number of parallel builds: " + maxParallelBuilds.ToString() + "\n";
-      //if (paneWindow != null)
-      //{
-      //  _applicationObject.ToolWindows.OutputWindow.ActivePane.OutputString(msg);
-      //  if (controlWindow != null)
-      //  {
-      //    //controlWindow.Refresh();
-      //  }
-      //}
+      GraphControl.Instance.InvalidateVisual();
     }
 
     int GetProjectsCount(Project project)
@@ -223,21 +198,14 @@ namespace VSIXIvson
       foreach (Project project in dte.Solution.Projects)
         allProjectsCount += GetProjectsCount(project);
       outputCounter = 0;
-      timer.Enabled = true;
-      timer.Interval = 1000;
-      timer.Elapsed += new ElapsedEventHandler(timer_Tick);
+      GraphControl.Instance.timer.Enabled = true;
+      GraphControl.Instance.timer.Interval = 1000;
+      GraphControl.Instance.timer.Elapsed += new ElapsedEventHandler(timer_Tick);
       currentBuilds.Clear();
       finishedBuilds.Clear();
-      if (paneWindow != null)
-      {
-        //paneWindow.Clear();
-        //if (controlWindow != null)
-        //{
-        //  //controlWindow.scrollLast = true;
-        //  //controlWindow.isBuilding = true;
-        //  //controlWindow.Refresh();
-        //}
-      }
+      GraphControl.Instance.scrollLast = true;
+      GraphControl.Instance.isBuilding = true;
+      GraphControl.Instance.InvalidateVisual();
     }
 
     public long PercentageProcessorUse()
@@ -272,13 +240,12 @@ namespace VSIXIvson
 
     void timer_Tick(object sender, ElapsedEventArgs e)
     {
-      //if (paneWindow != null)
-      //{
-      //  if (controlWindow != null)
-      //  {
-      //    //controlWindow.Refresh();
-      //  }
-      //}
+      GraphControl.Instance.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+           new System.Action(() =>
+           {
+             GraphControl.Instance.InvalidateVisual();
+           }));
+
     }
   }
 }

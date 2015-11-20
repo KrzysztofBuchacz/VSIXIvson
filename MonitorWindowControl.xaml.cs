@@ -26,5 +26,16 @@ namespace VSIXIvson
 
     public Package Package;
 
+    private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+      if (e.ExtentHeightChange != 0)
+      {
+        ScrollViewer scrollViewer = sender as ScrollViewer;
+        if (scrollViewer != null)
+        {
+          scrollViewer.ScrollToBottom();
+        }
+      }
     }
+  }
 }

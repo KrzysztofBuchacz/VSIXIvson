@@ -11,7 +11,9 @@
              Name="MyToolWindow">
   <Grid>
     <DockPanel >
-      <local:GraphControl></local:GraphControl>
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top" ScrollChanged="ScrollViewer_ScrollChanged">
+        <local:GraphControl></local:GraphControl>
+      </ScrollViewer>
     </DockPanel>
   </Grid>
 </UserControl>
