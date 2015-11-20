@@ -34,7 +34,7 @@ namespace VSIXIvson
 
     public GraphControl()
     {
-      isDark = GetThemeId().ToLower() == "1ded0138-47ce-435e-84ef-9ec1f439b749";
+      isDark = GetThemeId().ToLower() != "1ded0138-47ce-435e-84ef-9ec1f439b749";
 
       blackBrush = new SolidColorBrush(isDark ? Colors.White : Colors.Black);
       Background = Brushes.Transparent;
@@ -65,7 +65,7 @@ namespace VSIXIvson
 
       MonitorWindowCommand host = MonitorWindowCommand.Instance;
 
-      FormattedText dummyText = new FormattedText("A0", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, Brushes.Black);
+      FormattedText dummyText = new FormattedText("A0", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, blackBrush);
 
       double rowHeight = dummyText.Height + 1;
       int linesCount = host.currentBuilds.Count + host.finishedBuilds.Count + 1;
@@ -89,7 +89,7 @@ namespace VSIXIvson
       bool atLeastOneError = false;
       for (i = 0; i < host.finishedBuilds.Count; i++)
       {
-        FormattedText iname = new FormattedText(host.finishedBuilds[i].name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, Brushes.Black);
+        FormattedText iname = new FormattedText(host.finishedBuilds[i].name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, blackBrush);
         double l = iname.Width;
         t = host.finishedBuilds[i].end;
         atLeastOneError = atLeastOneError || !host.finishedBuilds[i].success;
@@ -104,7 +104,7 @@ namespace VSIXIvson
       }
       foreach (KeyValuePair<string, DateTime> item in host.currentBuilds)
       {
-        FormattedText iname = new FormattedText(item.Key, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, Brushes.Black);
+        FormattedText iname = new FormattedText(item.Key, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, blackBrush);
         double l = iname.Width;
         if (l > maxStringLength)
         {
@@ -115,7 +115,7 @@ namespace VSIXIvson
       {
         maxTick = (maxTick / tickStep + 1) * tickStep;
       }
-      FormattedText iint = new FormattedText(i.ToString(intFormat) + " ", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, Brushes.Black);
+      FormattedText iint = new FormattedText(i.ToString(intFormat) + " ", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, blackBrush);
       maxStringLength += 5 + iint.Width;
 
       Brush greenGradientBrush = new LinearGradientBrush(Colors.MediumSeaGreen, Colors.DarkGreen, new Point(0, 0), new Point(0, rowHeight));
@@ -190,24 +190,24 @@ namespace VSIXIvson
         drawingContext.DrawLine(new Pen(new SolidColorBrush(atLeastOneError ? Colors.Red : Colors.Green), 1), new Point(0, (i + 1) * rowHeight - 1),
             new Point(RenderSize.Width * host.finishedBuilds.Count / host.allProjectsCount, (i + 1) * rowHeight - 1));
       DateTime dt = new DateTime(0);
-      FormattedText zeroTime = new FormattedText(dt.ToString(MonitorWindowCommand.timeFormat), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, Brushes.Black);
+      FormattedText zeroTime = new FormattedText(dt.ToString(MonitorWindowCommand.timeFormat), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, blackBrush);
       drawingContext.DrawText(zeroTime, new Point(maxStringLength, i * rowHeight));
 
       dt = new DateTime(maxTick);
       string s = dt.ToString(MonitorWindowCommand.timeFormat);
-      FormattedText maxTime = new FormattedText(s, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, Brushes.Black);
+      FormattedText maxTime = new FormattedText(s, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, fontFace, emSize, blackBrush);
       double m = maxTime.Width;
       drawingContext.DrawText(maxTime, new Point(RenderSize.Width - m, i * rowHeight));
     }
 
     private string GetThemeId()
     {
-      const string CATEGORY_TEXT_GENERAL = "General";
+      const string CATEGORY_TEXT_GENERAL = "Themes";
       const string PROPERTY_NAME_CURRENT_THEME = "CurrentTheme";
 
       string result;
 
-      result = Microsoft.Win32.Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\14.0\"
+      result = Microsoft.Win32.Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\14.0_Config\"
          + CATEGORY_TEXT_GENERAL, PROPERTY_NAME_CURRENT_THEME, "").ToString();
 
       return result;
