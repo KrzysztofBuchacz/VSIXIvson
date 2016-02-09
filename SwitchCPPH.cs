@@ -142,5 +142,24 @@ namespace VSIXIvson
         //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
       }
     }
+
+
+    //DTE2 dte = (DTE2)this.ServiceProvider.GetService(typeof(DTE));
+    //dte.Find.Action = vsFindAction.vsFindActionReplaceAll;
+    //    dte.Find.FindWhat = idd;
+    //    dte.Find.ReplaceWith = "XXXYYYZZZ";
+    //    dte.Find.Target = vsFindTarget.vsFindTargetFiles;
+    //    dte.Find.MatchCase = true;
+    //    dte.Find.MatchWholeWord = true;
+    //    dte.Find.MatchInHiddenText = true;
+    //    dte.Find.PatternSyntax = vsFindPatternSyntax.vsFindPatternSyntaxRegExpr;
+    //    dte.Find.SearchPath = "Entire Solution";
+    //    dte.Find.SearchSubfolders = true;
+    //    dte.Find.KeepModifiedDocumentsOpen = false;
+    //    dte.Find.FilesOfType = "*.hm";
+    //    dte.Find.ResultsLocation = vsFindResultsLocation.vsFindResults1;
+    //    dte.Find.Execute();
+
+
   }
 }
