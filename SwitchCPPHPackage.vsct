@@ -59,6 +59,13 @@
           <ButtonText>Switch CPP/H</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidSwitchCPPHPackageCmdSet" id="cmdidIncludes" priority="0x0100" type="Button">
+        <Parent guid="guidSwitchCPPHPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic2" />
+        <Strings>
+          <ButtonText>Fix #include paths</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -81,6 +88,7 @@
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="SwitchCPPHId" value="0x0100" />
       <IDSymbol value="4129" name="cmdidMonitorWindowCommand" />
+      <IDSymbol value="4130" name="cmdidIncludes" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{3f75bee6-0666-4cc1-b951-32263e35e97d}">
@@ -92,5 +100,14 @@
       <IDSymbol name="bmpPicStrikethrough" value="6" />
     </GuidSymbol>
   
+  
+    <GuidSymbol value="{e272ca1c-c091-4885-8275-40d225a9b6b9}" name="guidImages1">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
   </Symbols>
 </CommandTable>

@@ -68,6 +68,7 @@ namespace VSIXIvson
         {
             SwitchCPPH.Initialize(this);
             base.Initialize();
+            Includes.Initialize(this);
         }
 
         #endregion
