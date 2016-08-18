@@ -118,6 +118,22 @@ namespace VSIXIvson
 
     private List<ProjectItem> projectItems = new List<ProjectItem>();
 
+    private void AddHeader(string header, int line, ref bool opened, ProjectItem pitem)
+    {
+      if (!opened)
+      {
+        opened = true;
+        Window win = pitem.Open(EnvDTE.Constants.vsViewKindCode);
+        win.Activate();
+      }
+      DTE2 dte = (DTE2)this.ServiceProvider.GetService(typeof(DTE));
+      TextSelection selection = dte.ActiveDocument.Selection as TextSelection;
+      selection.GotoLine(line, false);
+      selection.NewLine();
+      selection.GotoLine(line, false);
+      selection.Text = "#include " + header;
+    }
+
     private void Replace(string what, string with, ref bool opened, ProjectItem pitem)
     {
       if (what == with)
@@ -170,6 +186,7 @@ namespace VSIXIvson
           }
         }
 
+        Dictionary<string, string> uniquePaths = new Dictionary<string, string>();
         List<ProjectItem> editableItems = new List<ProjectItem>();
         foreach (ProjectItem pitem in projectItems)
         {
@@ -188,7 +205,11 @@ namespace VSIXIvson
                   ifile.Extension.ToLower() == ".c" ||
                   ifile.Extension.ToLower() == ".cpp")
               {
-                editableItems.Add(pitem);
+                if (!uniquePaths.ContainsKey(path))
+                {
+                  uniquePaths.Add(path, path);
+                  editableItems.Add(pitem);
+                }
               }
             }
           }
@@ -197,8 +218,9 @@ namespace VSIXIvson
           }
         }
 
-        foreach (ProjectItem pitem in editableItems)
+        for (int k = 0; k < editableItems.Count; k++)
         {
+          ProjectItem pitem  = editableItems[k];
           FileInfo docFile = new FileInfo(pitem.Properties.Item("FullPath").Value.ToString());
           bool opened = false;
           StreamReader sr = File.OpenText(docFile.FullName);
@@ -208,8 +230,10 @@ namespace VSIXIvson
             lines.Add(sr.ReadLine());
           }
           sr.Close();
-          foreach (string line in lines)
+          bool firstHeader = true;
+          for (int i = 0; i < lines.Count; i++)
           {
+            string line = lines[i];
             if (line.StartsWith("#include"))
             {
               string include = line.Substring(9);
@@ -220,6 +244,27 @@ namespace VSIXIvson
               include = include.Replace("\\\\", "\\");
               string[] splitted = include.Split(new char[] { '\\', '/' });
               string includeFileName = splitted[splitted.Length - 1];
+
+              if (firstHeader)
+              {
+                firstHeader = false;
+                if (docFile.Name.ToLower() == "stdafx.h")
+                {
+                  if (includeFileName.ToLower() != "vc_pragma.h")
+                  {
+                    AddHeader("<vc_pragma.h>", i+1, ref opened, pitem);
+                  }
+                }
+                if (docFile.Extension.ToLower() == ".c" ||
+                    docFile.Extension.ToLower() == ".cpp")
+                {
+                  if (includeFileName.ToLower() != "stdafx.h" && includeFileName.ToLower() != "vc_pragma.h")
+                  {
+                    AddHeader("<vc_pragma.h>", i+1, ref opened, pitem);
+                  }
+                }
+              }
+
               string comment = "";
               bool replaced = false;
               if (braces)
@@ -299,6 +344,14 @@ namespace VSIXIvson
                   }
                 }
               }
+            }
+          }
+          if (firstHeader)
+          {
+            if (docFile.Extension.ToLower() == ".c" ||
+                docFile.Extension.ToLower() == ".cpp")
+            {
+              AddHeader("<vc_pragma.h>", 1, ref opened, pitem);
             }
           }
         }
