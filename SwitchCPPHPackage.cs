@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="SwitchCPPHPackage.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -69,6 +63,7 @@ namespace VSIXIvson
             SwitchCPPH.Initialize(this);
             base.Initialize();
             Includes.Initialize(this);
+            FindReplaceGUIDs.Initialize(this);
         }
 
         #endregion
